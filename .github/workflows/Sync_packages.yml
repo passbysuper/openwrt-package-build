@@ -49,7 +49,7 @@ jobs:
         $GITHUB_WORKSPACE/.github/diy/Source
         #bash /$GITHUB_WORKSPACE/.github/diy/convert_translation
         #bash /$GITHUB_WORKSPACE/.github/diy/create_acl_for_luci -a
-        #bash /$GITHUB_WORKSPACE/.github/diy/modify
+        bash /$GITHUB_WORKSPACE/.github/diy/modify
 
     - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
       if: false  # 跳过该步骤
