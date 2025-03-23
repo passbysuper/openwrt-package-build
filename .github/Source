@@ -1,1 +1,7 @@
+https://github.com/immortalwrt/homeproxy luci-app-homeproxy
 
+
+main
+https://github.com/gdy666/luci-app-lucky luci-app-lucky
+https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki
+https://github.com/vernesong/OpenClash luci-app-openclash
