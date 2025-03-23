@@ -29,3 +29,7 @@ for repo in "${repos[@]}"; do
     echo "Cloning repository: $repo_url (branch: $branch)..."
     clone_and_move "$branch" "$repo_url" "$repo_subdir" "$target_dir"
 done
+
+# 递归删除当前目录下的所有 .git 文件夹，排除当前文件夹下的 .git
+find . -mindepth 2 -type d -name ".git" -exec rm -rf {} +
+
