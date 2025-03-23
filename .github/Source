@@ -13,7 +13,7 @@ clone_and_move() {
 repos=(
     "main https://github.com/gdy666/luci-app-lucky luci-app-lucky ./luci-app-lucky"
     "main https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki ./luci-app-nikki"
-    "main https://github.com/vernesong/OpenClash luci-app-openclash ./luci-app-openclash"
+    "master https://github.com/vernesong/OpenClash luci-app-openclash ./luci-app-openclash"
     "master https://github.com/immortalwrt/luci applications/luci-app-zerotier ./luci-app-zerotier"
     "master https://github.com/immortalwrt/luci applications/luci-app-autoreboot ./luci-app-autoreboot"
     "master https://github.com/immortalwrt/packages net/zerotier ./zerotier"
@@ -26,5 +26,6 @@ repos=(
 # 遍历 repos 数组并调用 clone_and_move 函数
 for repo in "${repos[@]}"; do
     IFS=' ' read -r branch repo_url repo_subdir target_dir <<< "$repo"
+    echo "Cloning repository: $repo_url (branch: $branch)..."
     clone_and_move "$branch" "$repo_url" "$repo_subdir" "$target_dir"
 done
