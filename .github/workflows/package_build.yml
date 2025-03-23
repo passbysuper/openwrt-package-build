@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build
-        uses: Super-Passerby/gh-action-sdk@main
+        uses: kenzok8/gh-action-sdk@hash
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
@@ -42,7 +42,7 @@ jobs:
       - name: Upload packages
         uses: ncipollo/release-action@main
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           artifacts: "${{ matrix.arch }}-${{ matrix.sdk }}.zip,bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
           allowUpdates: true
           replacesArtifacts: true
