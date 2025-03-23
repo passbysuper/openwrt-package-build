@@ -47,12 +47,13 @@ jobs:
         git rm -r --cache * >/dev/null 2>&1 &
         rm -rf `find ./* -maxdepth 0 -type d ! -name "diy"` >/dev/null 2>&1
         $GITHUB_WORKSPACE/.github/diy/Source
+        find $GITHUB_WORKSPACE/${{matrix.target}} -type d -name ".git" -exec rm -rf {} +
         #bash /$GITHUB_WORKSPACE/.github/diy/convert_translation
         #bash /$GITHUB_WORKSPACE/.github/diy/create_acl_for_luci -a
         #bash /$GITHUB_WORKSPACE/.github/diy/modify
 
     - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
-      #if: false  # 跳过该步骤
+      if: false  # 跳过该步骤
       uses: mxschmitt/action-tmate@v3
 
     - name: Upload
