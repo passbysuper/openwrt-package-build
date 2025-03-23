@@ -1,7 +1,20 @@
 https://github.com/immortalwrt/homeproxy luci-app-homeproxy
+https://github.com/jerrykuku/luci-theme-argon luci-theme-argon
 
 
 main
 https://github.com/gdy666/luci-app-lucky luci-app-lucky
 https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki
 https://github.com/vernesong/OpenClash luci-app-openclash
+
+master
+https://github.com/immortalwrt/luci applications/luci-app-zerotier
+https://github.com/immortalwrt/luci applications/luci-app-autoreboot
+
+https://github.com/immortalwrt/packages net/zerotier
+https://github.com/immortalwrt/packages libs/libnatpmp
+https://github.com/immortalwrt/packages
+
+
+https://github.com/immortalwrt/luci applications/luci-app-filebrowser
+https://github.com/immortalwrt/packages utils/filebrowser
