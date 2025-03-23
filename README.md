@@ -1,2 +1,1 @@
-# openwrt-package-build
-构建常用openwrt软件包
+ sed -i '$a src-git smpackage https://github.com/Super-Passerby/openwrt-package-build' feeds.conf.default
