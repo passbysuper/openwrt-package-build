@@ -51,6 +51,10 @@ jobs:
         #bash /$GITHUB_WORKSPACE/.github/diy/create_acl_for_luci -a
         #bash /$GITHUB_WORKSPACE/.github/diy/modify
 
+    - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
+      #if: false  # 跳过该步骤
+      uses: mxschmitt/action-tmate@v3
+
     - name: Upload
       run: |
         if [ -e $GITHUB_WORKSPACE/LICENSE ]; then
