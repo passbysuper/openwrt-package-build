@@ -1,20 +1,30 @@
-https://github.com/immortalwrt/homeproxy luci-app-homeproxy
-https://github.com/jerrykuku/luci-theme-argon luci-theme-argon
+git clone --depth 1 https://github.com/immortalwrt/homeproxy luci-app-homeproxy
+git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon luci-theme-argon
 
+# 定义 clone_and_move 函数
+clone_and_move() {
+    temp_dir=$(mktemp -d) &&
+    git clone --depth 1 --branch "$1" "$2" "$temp_dir" &&
+    [ -d "$temp_dir/$3" ] && mv "$temp_dir/$3" "$4" || echo "Error: Subdirectory $3 not found."
+    rm -rf "$temp_dir"
+}
 
-main
-https://github.com/gdy666/luci-app-lucky luci-app-lucky
-https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki
-https://github.com/vernesong/OpenClash luci-app-openclash
+# 定义 repos 数组
+repos=(
+    "main https://github.com/gdy666/luci-app-lucky luci-app-lucky ./luci-app-lucky"
+    "main https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki ./luci-app-nikki"
+    "main https://github.com/vernesong/OpenClash luci-app-openclash ./luci-app-openclash"
+    "master https://github.com/immortalwrt/luci applications/luci-app-zerotier ./luci-app-zerotier"
+    "master https://github.com/immortalwrt/luci applications/luci-app-autoreboot ./luci-app-autoreboot"
+    "master https://github.com/immortalwrt/packages net/zerotier ./zerotier"
+    "master https://github.com/immortalwrt/packages libs/libnatpmp ./libnatpmp"
+    "master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
+    "master https://github.com/immortalwrt/luci applications/luci-app-filebrowser ./luci-app-filebrowser"
+    "master https://github.com/immortalwrt/packages utils/filebrowser ./filebrowser"
+)
 
-master
-https://github.com/immortalwrt/luci applications/luci-app-zerotier
-https://github.com/immortalwrt/luci applications/luci-app-autoreboot
-
-https://github.com/immortalwrt/packages net/zerotier
-https://github.com/immortalwrt/packages libs/libnatpmp
-https://github.com/immortalwrt/packages
-
-
-https://github.com/immortalwrt/luci applications/luci-app-filebrowser
-https://github.com/immortalwrt/packages utils/filebrowser
+# 遍历 repos 数组并调用 clone_and_move 函数
+for repo in "${repos[@]}"; do
+    IFS=' ' read -r branch repo_url repo_subdir target_dir <<< "$repo"
+    clone_and_move "$branch" "$repo_url" "$repo_subdir" "$target_dir"
+done
