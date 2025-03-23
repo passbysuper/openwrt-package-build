@@ -31,5 +31,5 @@ for repo in "${repos[@]}"; do
 done
 
 # 递归删除当前目录下的所有 .git 文件夹，排除当前文件夹下的 .git
-find . -mindepth 2 -type d -name ".git" -exec rm -rf {} +
+find . -mindepth 2 -type d \( -name ".git" -o -name ".github" \) -exec rm -rf {} +
 
