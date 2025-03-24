@@ -87,16 +87,21 @@ jobs:
     - name: Check for changes
       id: detect_changes
       run: |
-        # 获取变更的目录列表并清理
+        # 获取变更的目录列表
         CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -Eo '^[^/]+/' | sort -u | uniq | grep -vE '^\.github/|^README.md' || true)
-        echo "Changed directories: $CHANGED_DIRS"
-        
-        # 如果变动的目录存在，保存到 GitHub 环境变量中
+ 
+        # 将换行替换为空格
+        CHANGED_DIRS=$(echo "$CHANGED_DIRS" | tr '\n' ' ')
+
+        echo "Changed directories:"
+        echo "    $CHANGED_DIRS"
+
+        # 如果变动的目录存在，保存到 GitHub 环境变量
         if [[ -n "$CHANGED_DIRS" ]]; then
-          echo "changes=true" >> $GITHUB_ENV
-          echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+            echo "    changes=true" >> $GITHUB_ENV
+            echo "    changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
         else
-          echo "changes=false" >> $GITHUB_ENV
+            echo "    changes=false" >> $GITHUB_ENV
         fi
 
     - name: Trigger Package_Build workflow
