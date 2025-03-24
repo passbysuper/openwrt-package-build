@@ -8,7 +8,8 @@ on:
   schedule:
     - cron: 0 */4 * * *
   repository_dispatch:
-
+  workflow_dispatch:  # 添加此行，支持手动触发
+  
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
