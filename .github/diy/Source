@@ -53,32 +53,56 @@ PACKAGES=("subconverter" "sub-web")
 TMP_DIR="/tmp/pkg_hash_update"
 mkdir -p "$TMP_DIR"
 
+# 确保安装必要的工具
+command -v git >/dev/null || { echo "请先安装 git"; exit 1; }
+command -v zstd >/dev/null || { echo "请先安装 zstd"; exit 1; }
+
 for package in "${PACKAGES[@]}"; do
     MAKEFILE="./${package}/Makefile"
     [ -f "$MAKEFILE" ] || { echo "❌ $MAKEFILE 不存在"; continue; }
 
     # 提取变量
     SOURCE_URL=$(awk -F':=' '/^PKG_SOURCE_URL:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
-    OLD_VERSION=$(awk -F':=' '/^PKG_SOURCE_VERSION:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
+    PKG_VERSION=$(awk -F':=' '/^PKG_VERSION:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
     OLD_HASH=$(awk -F':=' '/^PKG_MIRROR_HASH:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
     [ -z "$SOURCE_URL" ] && { echo "❌ 无法获取源码URL"; continue; }
 
-    # 克隆和计算哈希
+    # 克隆仓库
     CLONE_DIR="${TMP_DIR}/${package}"
     rm -rf "$CLONE_DIR"
     git clone -q "$SOURCE_URL" "$CLONE_DIR" || { echo "❌ 克隆失败"; continue; }
     
-    NEW_VERSION=$(git -C "$CLONE_DIR" rev-parse HEAD)
-    tar czf "${TMP_DIR}/${package}.tar.gz" -C "$CLONE_DIR" . || { echo "❌ 创建tar包失败"; continue; }
-    NEW_HASH=$(sha256sum "${TMP_DIR}/${package}.tar.gz" | awk '{print $1}')
+    # 获取最新commit信息
+    cd "$CLONE_DIR" || { echo "❌ 无法进入克隆目录"; continue; }
+    COMMIT_HASH=$(git rev-parse HEAD)
+    COMMIT_DATE=$(git log -1 --format=%cd --date=short | sed 's/-//g')
+    cd - >/dev/null || exit 1
+
+    # 生成与OpenWrt官方一致的tar.zst包
+    TAR_NAME="${package}-${PKG_VERSION}~${COMMIT_HASH:0:8}.tar"
+    TAR_PATH="${TMP_DIR}/${TAR_NAME}"
+    
+    (cd "$CLONE_DIR" && \
+     git archive --prefix="${TAR_NAME%.tar}/" HEAD > "${TAR_PATH}") || { echo "❌ git archive失败"; continue; }
+
+    # 使用zstd压缩（与OpenWrt官方一致）
+    zstd -q -19 --no-progress "${TAR_PATH}" -o "${TAR_PATH}.zst" || { echo "❌ zstd压缩失败"; continue; }
+
+    # 计算哈希值
+    NEW_HASH=$(sha256sum "${TAR_PATH}.zst" | awk '{print $1}')
 
     # 更新Makefile
-    sed -i "s/^PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=$NEW_VERSION/; \
-            s/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$NEW_HASH/" "$MAKEFILE"
+    sed -i \
+        -e "s/^PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=$COMMIT_HASH/" \
+        -e "s/^PKG_SOURCE_DATE:=.*/PKG_SOURCE_DATE:=$COMMIT_DATE/" \
+        -e "s/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$NEW_HASH/" \
+        "$MAKEFILE"
 
     echo "✅ $package 更新成功"
-    echo "版本: $OLD_VERSION -> $NEW_VERSION"
-    echo "哈希: $OLD_HASH -> $NEW_HASH"
+    echo "Commit: $COMMIT_HASH"
+    echo "日期: $COMMIT_DATE"
+    echo "新哈希: $NEW_HASH"
+    echo "文件名: ${TAR_NAME}.zst"
 done
 
 rm -rf "$TMP_DIR"
