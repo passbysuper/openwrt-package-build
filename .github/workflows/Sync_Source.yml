@@ -82,7 +82,7 @@ jobs:
         echo "$CHANGED_FILES"
 
         # 提取文件夹名称并去重
-        CHANGED_DIRS=$(echo "$CHANGED_FILES" | grep -oP '^\S+ \S+ \K.*' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
+        CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
 
         # 调试：显示更改的文件夹名称
         echo "Changed directories:"
@@ -94,7 +94,6 @@ jobs:
         else
           echo "changed_dirs=" >> $GITHUB_ENV
         fi
-
 
 
 
