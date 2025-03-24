@@ -110,20 +110,13 @@ jobs:
         else
           echo "nothing to commit"
           exit 0
-        fi || exit 0
-
-
-    - name: Use changed files
-      run: |
-        echo "Changed files: ${{ env.changed_files }}"
-   
-       
+        fi || exit 0    
 
     - name: Trigger Package_Build workflow
-      if: env.changes == 'true'
+      if: env.changed_dirs != ''
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: .github/workflows/Package_Build.yml.bak  # 确保路径正确
+        workflow: .github/workflows/Package_Build.yml  # 确保路径正确
         token: ${{ secrets.GITHUB_TOKEN }}
         inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
