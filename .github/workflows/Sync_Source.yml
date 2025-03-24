@@ -59,46 +59,32 @@ jobs:
         TARGET_DIR="$GITHUB_WORKSPACE/${{matrix.target}}"
 
         # 排除的目录和文件
-        EXCLUDE_LIST=("${{matrix.target}}" ".github" "README.md" ".git" ".")
+        EXCLUDE_LIST=("${{matrix.target}}" ".github" "README.md" ".git")
 
         # 构建 rsync 的排除参数
         EXCLUDE_PARAMS=()
         for item in "${EXCLUDE_LIST[@]}"; do
-          EXCLUDE_PARAMS+=("--exclude=$item")
+                EXCLUDE_PARAMS+=("--exclude=$item")
         done
 
-        # 使用 rsync 对比两个目录的差异（忽略软链接，并详细列出差异）
-        # 1. 检测 SOURCE_DIR 中新增或修改的文件和目录
+        # 使用 rsync 对比两个目录的差异
         CHANGED_FILES_SOURCE=$(rsync -rcn --itemize-changes --prune-empty-dirs -l "${EXCLUDE_PARAMS[@]}" "$SOURCE_DIR/" "$TARGET_DIR/")
-
-        # 2. 检测 TARGET_DIR 中新增的文件和目录
         CHANGED_FILES_TARGET=$(rsync -rcn --itemize-changes --prune-empty-dirs -l "${EXCLUDE_PARAMS[@]}" "$TARGET_DIR/" "$SOURCE_DIR/")
-
-        # 合并两个结果
         CHANGED_FILES=$(echo -e "$CHANGED_FILES_SOURCE\n$CHANGED_FILES_TARGET" | sort -u)
 
-        # 调试：列出所有变更的文件和目录名称
-        echo "Changed files and directories:"
-        echo "$CHANGED_FILES"
-
-        # 提取文件夹名称并去重
-        #CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
-        CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | grep -vE '^\.$' | tr '\n' ' ')
-
-
-        # 提取顶级文件夹名称
-        TOP_LEVEL_DIRS=$(echo "$CHANGED_DIRS" | tr ' ' '\n' | awk -F'/' '{print $1}' | sort -u | tr '\n' ' ')
-
-        # 调试：显示更改的顶级文件夹名称
-        echo "Changed top-level directories:"
-        echo "$TOP_LEVEL_DIRS"
-
-        # 将更改的顶级文件夹名称保存到 GitHub 环境变量
-        if [[ -n "$TOP_LEVEL_DIRS" ]]; then
-          echo "changed_dirs=$TOP_LEVEL_DIRS" >> $GITHUB_ENV
+        # 处理变更文件，提取文件夹名称
+        if [[ -n "$CHANGED_FILES" ]]; then
+                CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname 2>/dev/null | sort -u | grep -vE '^\.$' | tr '\n' ' ')
         else
-          echo "changed_dirs=" >> $GITHUB_ENV
+                CHANGED_DIRS=""
         fi
+
+        # 输出调试信息
+        echo "Final changed_dirs: '$CHANGED_DIRS'"
+
+        # 设置 GitHub 环境变量
+        echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+
 
      
 
