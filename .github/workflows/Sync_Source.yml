@@ -95,9 +95,9 @@ jobs:
             touch "$HASH_CACHE_FILE"
         fi
 
-        # 获取所有文件夹的哈希值
-        echo "Calculating folder hashes..."
-        CURRENT_HASHES=$(find . -type d -not -path './.github/*' -not -path './README.md' -exec sh -c 'find "$1" -type f -exec md5sum {} + | sort | md5sum' _ {} \; | sort)
+        # 获取所有一级文件夹的哈希值
+        echo "Calculating folder hashes for top-level directories..."
+        CURRENT_HASHES=$(find . -maxdepth 1 -type d -not -path './.github' -not -path './README.md' -not -path '.' -exec sh -c 'find "$1" -type f -exec md5sum {} + | sort | md5sum' _ {} \; | sort)
 
         # 调试：显示当前哈希值
         echo "Current folder hashes:"
@@ -143,11 +143,13 @@ jobs:
         git add .github/hash_cache.txt
 
         # 提交更改
-        git commit -m "Update hash cache [skip ci]"
+        git commit -m "Update hash cache for top-level directories [skip ci]"
 
         # 推送到仓库（使用 GH_PAT 进行身份验证）
         git push --quiet "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
 
+
+    
        
 
 
@@ -155,7 +157,7 @@ jobs:
       if: env.changes == 'true'
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: .github/workflows/Package_Build.yml  # 确保路径正确
+        workflow: .github/workflows/Package_Build.yml.bak  # 确保路径正确
         token: ${{ secrets.GITHUB_TOKEN }}
         inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
