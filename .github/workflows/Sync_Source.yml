@@ -82,8 +82,8 @@ jobs:
     - name: Check for changes
       id: detect_changes
       run: |
-        # 获取变更的文件列表，提取文件的一级目录并去重
-        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | awk -F'/' '{print $1}' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 获取变更的文件列表，并提取文件夹名（一级目录）
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
         # 输出所有变更的文件夹
         echo "Changed directories: $CHANGED_DIRS"
@@ -95,6 +95,7 @@ jobs:
         else
             echo "changes=false" >> $GITHUB_ENV
         fi
+
 
     - name: Trigger Package_Build workflow
       if: env.changes == 'true'
