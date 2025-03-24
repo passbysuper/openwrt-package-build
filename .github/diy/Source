@@ -48,3 +48,22 @@ sed -i \
 */Makefile
 
 
+##更新HASH
+PACKAGES=("subconverter" "sub-web")
+
+for package in "${PACKAGES[@]}"; do
+    MAKEFILE="${package}/Makefile"
+
+    [[ -f "$MAKEFILE" ]] || { echo "❌ $MAKEFILE 不存在，跳过"; continue; }
+
+    SOURCE_URL=$(awk -F ':= ' '/^PKG_SOURCE_URL:=/{print $2}' "$MAKEFILE")
+    [[ -n "$SOURCE_URL" ]] || { echo "❌ 获取 $package 源码地址失败"; continue; }
+
+    TAR_PATH="/tmp/${package}.tar.gz"
+    wget -qO "$TAR_PATH" "$SOURCE_URL" || { echo "❌ 下载 $package 失败"; continue; }
+
+    NEW_HASH=$(sha256sum "$TAR_PATH" | awk '{print $1}')
+    sed -i "s/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$NEW_HASH/" "$MAKEFILE"
+
+    echo "✅ $package PKG_MIRROR_HASH 更新完成"
+done
