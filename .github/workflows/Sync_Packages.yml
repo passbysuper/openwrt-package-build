@@ -102,7 +102,6 @@ jobs:
       with:
         workflow: .github/workflows/Package_Build.yml   # 确保指定了完整的路径
         token: ${{ secrets.GITHUB_TOKEN }}
-        inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
