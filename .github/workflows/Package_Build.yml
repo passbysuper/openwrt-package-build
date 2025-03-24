@@ -24,6 +24,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set start time (Asia/Shanghai timezone)
+        id: set_time
+        run: |
+          # 获取当前时间并格式化
+          START_TIME_TAG=$(TZ="Asia/Shanghai" date +'%Y.%m.%d-%H_%M')
+          START_TIME_RELEASE=$(TZ="Asia/Shanghai" date +'%Y-%m-%d %H:%M')
+        
+          echo "Start time: $START_TIME_TAG"
+                       
+          echo "START_TIME_TAG=$START_TIME_TAG" >> $GITHUB_ENV
+          echo "START_TIME_RELEASE=$START_TIME_RELEASE" >> $GITHUB_ENV
+
+          # 使用shell变量而不是env变量
+          echo "TAG_NAME_FM=FM:$START_TIME_TAG" >> $GITHUB_ENV
+          echo "RELEASE_NAME_FM=Firmware发布时间(UTC+8): $START_TIME_RELEASE" >> $GITHUB_ENV
+        
+          # 输出结果用于调试
+          echo "Generated TAG_NAME_FM: FM:$START_TIME_TAG"
+          echo "Generated RELEASE_NAME_FM: Firmware发布时间(UTC+8): $START_TIME_RELEASE"
+
+
+
       - name: Set up packages
         run: |
           # 如果输入了 packages 参数，则使用它；否则，使用默认值
