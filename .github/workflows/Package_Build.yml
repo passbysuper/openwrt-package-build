@@ -2,6 +2,11 @@ name: Package Build
 
 on:
   workflow_dispatch:
+    inputs:
+      packages:
+        description: "Changed packages"
+        required: false
+        default: ""  # 默认值为空
   push:
     tags:
       - v.**
@@ -22,6 +27,18 @@ jobs:
       - uses: actions/checkout@main
         with:
           fetch-depth: 0
+
+      - name: Set up packages
+        run: |
+          # 如果输入了 packages 参数，则使用它；否则，使用默认值
+          if [ -z "${{ github.event.inputs.packages }}" ]; then
+            echo "No specific packages provided. Using default."
+            PACKAGES="filebrowser luci-app-autoreboot luci-app-homeproxy luci-app-nikki luci-app-zerotier miniupnpc zerotier libnatpmp luci-app-filebrowser luci-app-lucky luci-app-openclash luci-theme-argon luci-app-argon-config"
+          else
+            echo "Using provided packages: ${{ github.event.inputs.packages }}"
+            PACKAGES="${{ github.event.inputs.packages }}"
+          fi
+          echo "PACKAGES=${PACKAGES}" >> $GITHUB_ENV
 
       - name: Build
         uses: kenzok8/gh-action-sdk@hash
