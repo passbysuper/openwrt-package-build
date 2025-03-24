@@ -29,7 +29,14 @@ jobs:
           # 如果输入了 packages 参数，则使用它；否则，使用默认值
           if [ -z "${{ github.event.inputs.packages }}" ]; then
             echo "No specific packages provided. Using default."
-            PACKAGES="filebrowser luci-app-autoreboot luci-app-homeproxy luci-app-nikki luci-app-zerotier miniupnpc zerotier libnatpmp luci-app-filebrowser luci-app-lucky luci-app-openclash luci-theme-argon luci-app-argon-config"
+            
+            PACKAGES="luci-theme-argon luci-app-argon-config \
+            luci-app-openclash luci-app-homeproxy luci-app-nikki \
+            luci-app-zerotier zerotier miniupnpc libnatpmp \
+            luci-app-filebrowser filebrowser \
+            luci-app-lucky luci-app-autoreboot \
+            subconverter libcron quickjspp"
+           
           else
             echo "Using provided packages: ${{ github.event.inputs.packages }}"
             PACKAGES="${{ github.event.inputs.packages }}"
