@@ -79,38 +79,40 @@ jobs:
       with:
         fetch-depth: 0
 
-        - name: Check for changes
-          id: detect_changes
-          run: |
-            # 调试：显示当前的提交信息
-            echo "Raw git diff output:"
-            git diff --name-only HEAD^ HEAD
+    - name: Check for changes
+      id: detect_changes
+      run: |
+        # 调试：显示当前的提交信息
+        echo "Raw git diff output:"
+        git diff --name-only HEAD^ HEAD
 
-            # 获取变更的目录列表
-            CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 获取变更的目录列表
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
-            # 调试：显示处理后的变更目录
-            echo "Changed directories after processing:"
-            echo "$CHANGED_DIRS"
+        # 调试：显示处理后的变更目录
+        echo "Changed directories after processing:"
+        echo "$CHANGED_DIRS"
 
-            # 将换行替换为空格
-            CHANGED_DIRS=$(echo "$CHANGED_DIRS" | tr '\n' ' ')
+        # 将换行替换为空格
+        CHANGED_DIRS=$(echo "$CHANGED_DIRS" | tr '\n' ' ')
 
-            # 调试：显示最终变更目录
-            echo "Changed directories (final):"
-            echo "$CHANGED_DIRS"
+        # 调试：显示最终变更目录
+        echo "Changed directories (final):"
+        echo "$CHANGED_DIRS"
 
-            # 如果有变动的目录，则保存到 GitHub 环境变量
-            if [[ -n "$CHANGED_DIRS" ]]; then
-                echo "changes=true" >> $GITHUB_ENV
-                echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
-            else
-                echo "changes=false" >> $GITHUB_ENV
-            fi
+        # 如果有变动的目录，则保存到 GitHub 环境变量
+        if [[ -n "$CHANGED_DIRS" ]]; then
+            echo "changes=true" >> $GITHUB_ENV
+            echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+        else
+            echo "changes=false" >> $GITHUB_ENV
+        fi
 
-            # 调试：显示环境变量的内容
-            echo "Environment variables set:"
-            cat $GITHUB_ENV
+        # 调试：显示环境变量的内容
+        echo "Environment variables set:"
+        cat $GITHUB_ENV
+            
+
 
 
 
