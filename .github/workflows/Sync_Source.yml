@@ -72,18 +72,23 @@ jobs:
         CHANGED_FILES_TARGET=$(rsync -rcn --itemize-changes --prune-empty-dirs -l "${EXCLUDE_PARAMS[@]}" "$TARGET_DIR/" "$SOURCE_DIR/")
         CHANGED_FILES=$(echo -e "$CHANGED_FILES_SOURCE\n$CHANGED_FILES_TARGET" | sort -u)
 
-        # 处理变更文件，提取文件夹名称
+        # 处理变更文件，提取目录名称
         if [[ -n "$CHANGED_FILES" ]]; then
-                CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname 2>/dev/null | sort -u | grep -vE '^\.$' | tr '\n' ' ')
+                # 提取变更文件所在目录
+                CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname 2>/dev/null | sort -u | grep -vE '^\.$')
+
+                # 仅保留顶级目录
+                TOP_LEVEL_DIRS=$(echo "$CHANGED_DIRS" | awk -F'/' '{print $1}' | sort -u | tr '\n' ' ')
         else
-                CHANGED_DIRS=""
+                TOP_LEVEL_DIRS=""
         fi
 
         # 输出调试信息
-        echo "Final changed_dirs: '$CHANGED_DIRS'"
+        echo "Final changed_dirs: '$TOP_LEVEL_DIRS'"
 
         # 设置 GitHub 环境变量
-        echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+        echo "changed_dirs=$TOP_LEVEL_DIRS" >> $GITHUB_ENV
+
 
 
      
