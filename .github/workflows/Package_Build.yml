@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Build
-        uses: Super-Passerby/gh-action-sdk@hash
+        uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
@@ -37,6 +37,7 @@ jobs:
             sub-web subconverter libcron quickjspp               
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
+          FIXUP: 1
 
       - name: Delete other language
         run: |
