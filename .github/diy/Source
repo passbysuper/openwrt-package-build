@@ -22,6 +22,10 @@ repos=(
     "master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
     "master https://github.com/immortalwrt/luci applications/luci-app-filebrowser ./luci-app-filebrowser"
     "master https://github.com/immortalwrt/packages utils/filebrowser ./filebrowser"
+    # subconverter
+    "master https://github.com/immortalwrt/packages net/subconverter ./subconverter"
+    "master https://github.com/immortalwrt/packages libs/libcron ./libcron"
+    "master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
 )
 
 # 遍历 repos 数组并调用 clone_and_move 函数
