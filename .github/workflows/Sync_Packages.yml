@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       packages:
-        description: 'packages'
+        description: 'Packages to build'
         required: false
         default: 'false'	
 
@@ -87,8 +87,11 @@ jobs:
     - name: Check for changes
       id: detect_changes
       run: |
+        # 获取变更的目录列表并清理
         CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -Eo '^[^/]+/' | sort -u | uniq | grep -vE '^\.github/|^README.md' || true)
         echo "Changed directories: $CHANGED_DIRS"
+        
+        # 如果变动的目录存在，保存到 GitHub 环境变量中
         if [[ -n "$CHANGED_DIRS" ]]; then
           echo "changes=true" >> $GITHUB_ENV
           echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
@@ -100,8 +103,12 @@ jobs:
       if: env.changes == 'true'
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: .github/workflows/Package_Build.yml   # 确保指定了完整的路径
+        workflow: .github/workflows/Package_Build.yml  # 确保路径正确
         token: ${{ secrets.GITHUB_TOKEN }}
+        inputs: |
+          {
+            "packages": "${{ env.changed_dirs }}"  # 传递变动的目录作为参数
+          }
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -110,4 +117,3 @@ jobs:
         repository: ${{ github.repository }}
         retain_days: 1
         keep_minimum_runs: 1
-
