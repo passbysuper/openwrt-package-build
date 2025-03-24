@@ -84,10 +84,10 @@ jobs:
       run: |
         # 调试：显示当前的提交信息
         echo "Current commit diff:"
-        git diff-tree --no-commit-id --name-only -r HEAD^ HEAD
+        git diff --name-only HEAD^ HEAD
         
-        # 使用 git diff-tree 获取变动的文件夹
-        CHANGED_DIRS=$(git diff-tree --no-commit-id --name-only -r HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 使用 git diff 获取变动的文件夹
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
         # 调试：显示变更的文件夹
         echo "Changed directories after processing: $CHANGED_DIRS"
@@ -103,6 +103,7 @@ jobs:
         # 调试：显示环境变量的内容
         echo "Environment variables set:"
         cat $GITHUB_ENV
+
 
 
 
