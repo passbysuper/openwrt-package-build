@@ -97,7 +97,13 @@ jobs:
 
         # 获取所有一级文件夹的哈希值，并记录文件夹名称
         echo "Calculating folder hashes for top-level directories..."
-        CURRENT_HASHES=$(find . -maxdepth 1 -type d -not -path './.github' -not -path './README.md' -not -path '.' -exec sh -c 'echo "$1 $(find "$1" -type f -exec md5sum {} + | sort | md5sum)"' _ {} \; | sort)
+        CURRENT_HASHES=$(find . -maxdepth 1 -type d -not -path './.git' -not -path './.github' -not -path './README.md' -not -path '.' -exec sh -c '
+            if [ -n "$(ls -A "$1")" ]; then
+                echo "$1 $(find "$1" -type f -exec md5sum {} + | sort | md5sum)"
+            else
+                echo "$1 d41d8cd98f00b204e9800998ecf8427e  -"
+            fi
+        ' _ {} \; | sort)
 
         # 调试：显示当前哈希值
         echo "Current folder hashes:"
@@ -131,6 +137,12 @@ jobs:
         # 调试：显示环境变量的内容
         echo "Environment variables set:"
         cat $GITHUB_ENV
+
+
+
+
+
+
 
     - name: Commit and push hash cache
       if: env.changes == 'true'
