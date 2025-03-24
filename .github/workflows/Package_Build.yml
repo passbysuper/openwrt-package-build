@@ -35,7 +35,7 @@ jobs:
             luci-app-zerotier zerotier miniupnpc libnatpmp
             luci-app-filebrowser filebrowser
             luci-app-lucky luci-app-autoreboot
-            subconverter libcron quickjspp               
+            sub-web subconverter libcron quickjspp               
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
