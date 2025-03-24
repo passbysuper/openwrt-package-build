@@ -84,16 +84,21 @@ jobs:
         # 提取文件夹名称并去重
         CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
 
-        # 调试：显示更改的文件夹名称
-        echo "Changed directories:"
-        echo "$CHANGED_DIRS"
+        # 提取顶级文件夹名称
+        TOP_LEVEL_DIRS=$(echo "$CHANGED_DIRS" | tr ' ' '\n' | awk -F'/' '{print $1}' | sort -u | tr '\n' ' ')
 
-        # 将更改的文件夹名称保存到 GitHub 环境变量
-        if [[ -n "$CHANGED_DIRS" ]]; then
-          echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+        # 调试：显示更改的顶级文件夹名称
+        echo "Changed top-level directories:"
+        echo "$TOP_LEVEL_DIRS"
+
+        # 将更改的顶级文件夹名称保存到 GitHub 环境变量
+        if [[ -n "$TOP_LEVEL_DIRS" ]]; then
+          echo "changed_dirs=$TOP_LEVEL_DIRS" >> $GITHUB_ENV
         else
           echo "changed_dirs=" >> $GITHUB_ENV
         fi
+
+     
 
 
 
