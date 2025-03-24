@@ -8,12 +8,6 @@ on:
   schedule:
     - cron: 0 */4 * * *
   repository_dispatch:
-  workflow_dispatch:
-    inputs:
-      packages:
-        description: 'Packages to build'
-        required: false
-        default: 'false'	
 
 jobs:
   build:
