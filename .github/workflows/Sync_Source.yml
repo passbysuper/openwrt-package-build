@@ -82,11 +82,15 @@ jobs:
     - name: Check for changes
       id: detect_changes
       run: |
-        # 获取变更的文件列表，并提取文件夹名（一级目录）
-        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 调试：显示当前的提交信息
+        echo "Current commit diff:"
+        git diff-tree --no-commit-id --name-only -r HEAD^ HEAD
+        
+        # 使用 git diff-tree 获取变动的文件夹
+        CHANGED_DIRS=$(git diff-tree --no-commit-id --name-only -r HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
-        # 输出所有变更的文件夹
-        echo "Changed directories: $CHANGED_DIRS"
+        # 调试：显示变更的文件夹
+        echo "Changed directories after processing: $CHANGED_DIRS"
 
         # 如果有变动的目录，则保存到 GitHub 环境变量
         if [[ -n "$CHANGED_DIRS" ]]; then
@@ -95,6 +99,11 @@ jobs:
         else
             echo "changes=false" >> $GITHUB_ENV
         fi
+        
+        # 调试：显示环境变量的内容
+        echo "Environment variables set:"
+        cat $GITHUB_ENV
+
 
 
     - name: Trigger Package_Build workflow
