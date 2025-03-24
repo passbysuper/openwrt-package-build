@@ -1,4 +1,19 @@
 #
+# Copyright (C) 2010-2012 OpenWrt.org
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+include $(TOPDIR)/rules.mk
+
+PKG_NAME:=miniupnpc
+PKG_VERSION:=2.2.8
+PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://miniupnp.tuxfamily.org/files
+PKG_HASH:=05b929679091b9921b6b6c1f25e39e4c8d1f4d46c8feb55a412aa697aee03a93
 
 PKG_MAINTAINER:=
 PKG_LICENSE:=BSD-3-Clause
