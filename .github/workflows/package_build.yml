@@ -28,7 +28,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: filebrowser luci-app-autoreboot luci-app-homeproxy luci-app-nikki luci-app-zerotier miniupnpc zerotier libnatpmp luci-app-filebrowser luci-app-lucky luci-app-openclash luci-theme-argon
+          PACKAGES: filebrowser luci-app-autoreboot luci-app-homeproxy luci-app-nikki luci-app-zerotier miniupnpc zerotier libnatpmp luci-app-filebrowser luci-app-lucky luci-app-openclash luci-theme-argon luci-app-argon-config
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
