@@ -82,13 +82,13 @@ jobs:
     - name: Check for changes
       id: detect_changes
       run: |
-        # 获取变更的文件列表，并提取文件的一级目录
-        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | cut -d'/' -f1 | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 获取变更的文件列表，提取文件的一级目录并去重
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | awk -F'/' '{print $1}' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
-        echo "Changed directories:"
-        echo "    $CHANGED_DIRS"
+        # 输出所有变更的文件夹
+        echo "Changed directories: $CHANGED_DIRS"
 
-        # 如果变动的目录存在，保存到 GitHub 环境变量
+        # 如果有变动的目录，则保存到 GitHub 环境变量
         if [[ -n "$CHANGED_DIRS" ]]; then
             echo "changes=true" >> $GITHUB_ENV
             echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
