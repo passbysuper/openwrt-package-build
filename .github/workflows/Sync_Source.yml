@@ -84,17 +84,24 @@ jobs:
       run: |
         # 调试：显示当前的提交信息
         echo "Raw git diff output:"
-        git diff --name-only HEAD^ HEAD
+        git diff --name-only HEAD~1 HEAD
 
-        # 获取变更的目录列表
-        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        # 获取变更的目录列表（基于 git diff）
+        CHANGED_DIRS_DIFF=$(git diff --name-only HEAD~1 HEAD | grep -o '^[^/]*/' | sort -u | grep -vE '^\.github/|^README.md$' || true)
 
-        # 调试：显示处理后的变更目录
-        echo "Changed directories after processing:"
-        echo "$CHANGED_DIRS"
+        # 调试：显示 git diff 处理后的变更目录
+        echo "Changed directories from git diff:"
+        echo "$CHANGED_DIRS_DIFF"
 
-        # 将换行替换为空格
-        CHANGED_DIRS=$(echo "$CHANGED_DIRS" | tr '\n' ' ')
+        # 获取未跟踪的文件和目录（基于 git status）
+        CHANGED_DIRS_STATUS=$(git status --porcelain | awk '{print $2}' | grep -o '^[^/]*/' | sort -u | grep -vE '^\.github/|^README.md$' || true)
+
+        # 调试：显示 git status 处理后的变更目录
+        echo "Changed directories from git status:"
+        echo "$CHANGED_DIRS_STATUS"
+
+        # 合并 git diff 和 git status 的结果
+        CHANGED_DIRS=$(echo -e "$CHANGED_DIRS_DIFF\n$CHANGED_DIRS_STATUS" | sort -u | tr '\n' ' ')
 
         # 调试：显示最终变更目录
         echo "Changed directories (final):"
@@ -111,6 +118,8 @@ jobs:
         # 调试：显示环境变量的内容
         echo "Environment variables set:"
         cat $GITHUB_ENV
+
+
             
 
 
