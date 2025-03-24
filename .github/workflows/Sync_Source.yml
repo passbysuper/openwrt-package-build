@@ -60,6 +60,11 @@ jobs:
         fi
         cd $GITHUB_WORKSPACE/${{matrix.target}}
         if git status --porcelain | grep .; then
+          
+          # 获取更改的文件列表
+          CHANGED_FILES=$(git status --porcelain | awk '{print $2}' | tr '\n' ' ')
+          echo "Changed files: $CHANGED_FILES"
+          
           git add .
           git commit -am "update $(date '+%Y-%m-%d %H:%M:%S')"
           git push --quiet "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git" HEAD:${{ matrix.target }}
@@ -68,6 +73,10 @@ jobs:
           exit 0
         fi || exit 0
 
+
+    - name: Use changed files
+      run: |
+        echo "Changed files: ${{ env.changed_files }}"
 
   check:
     needs: build
@@ -79,69 +88,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Check for changes
-      id: detect_changes
-      run: |
-        # 调试：显示当前工作目录
-        echo "Current workspace:"
-        pwd
-
-        # 定义哈希缓存文件路径
-        HASH_CACHE_FILE=".github/hash_cache.txt"
-
-        # 创建哈希缓存文件（如果不存在）
-        if [[ ! -f "$HASH_CACHE_FILE" ]]; then
-            echo "Hash cache file not found. Creating a new one..."
-            touch "$HASH_CACHE_FILE"
-        fi
-
-        # 获取所有一级文件夹的哈希值，并记录文件夹名称
-        echo "Calculating folder hashes for top-level directories..."
-        CURRENT_HASHES=$(find . -maxdepth 1 -type d -not -path './.git' -not -path './.github' -not -path './README.md' -not -path '.' -exec sh -c '
-            echo "Processing folder: $1"
-            if [ -n "$(ls -A "$1")" ]; then
-                echo "Files in $1:"
-                find "$1" -type f
-                HASH=$(find "$1" -type f -exec md5sum {} + | sort | md5sum | awk "{print \$1}")
-                echo "$1 $HASH"
-            else
-                echo "$1 is empty"
-                echo "$1 d41d8cd98f00b204e9800998ecf8427e"
-            fi
-        ' _ {} \; | sort)
-
-        # 调试：显示当前哈希值
-        echo "Current folder hashes:"
-        echo "$CURRENT_HASHES"
-
-        # 读取上一次的哈希值
-        PREVIOUS_HASHES=$(cat "$HASH_CACHE_FILE" 2>/dev/null || true)
-
-        # 调试：显示上一次的哈希值
-        echo "Previous folder hashes:"
-        echo "$PREVIOUS_HASHES"
-
-        # 对比哈希值，找出变化的文件夹
-        CHANGED_DIRS=$(diff <(echo "$PREVIOUS_HASHES") <(echo "$CURRENT_HASHES") | grep '^<\|^>' | awk '{print $2}' | sort -u | tr '\n' ' ')
-
-        # 调试：显示变化的文件夹
-        echo "Changed directories:"
-        echo "$CHANGED_DIRS"
-
-        # 如果有变动的目录，则保存到 GitHub 环境变量
-        if [[ -n "$CHANGED_DIRS" ]]; then
-            echo "changes=true" >> $GITHUB_ENV
-            echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
-        else
-            echo "changes=false" >> $GITHUB_ENV
-        fi
-
-        # 更新哈希缓存文件
-        echo "$CURRENT_HASHES" > "$HASH_CACHE_FILE"
-
-        # 调试：显示环境变量的内容
-        echo "Environment variables set:"
-        cat $GITHUB_ENV
 
 
 
@@ -149,23 +95,6 @@ jobs:
 
 
 
-
-
-    - name: Commit and push hash cache
-      if: env.changes == 'true'
-      run: |
-        # 配置 Git 用户信息
-        git config --global user.email "actions@github.com"
-        git config --global user.name "GitHub Actions"
-
-        # 添加哈希缓存文件到暂存区
-        git add .github/hash_cache.txt
-
-        # 提交更改
-        git commit -m "Update hash cache for top-level directories [skip ci]"
-
-        # 推送到仓库（使用 GH_PAT 进行身份验证）
-        git push --quiet "https://${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
 
 
 
