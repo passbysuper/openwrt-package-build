@@ -1,4 +1,4 @@
-name: Sync packages
+name: Sync Source
 
 on:
   push:
@@ -105,10 +105,7 @@ jobs:
       with:
         workflow: .github/workflows/Package_Build.yml  # 确保路径正确
         token: ${{ secrets.GITHUB_TOKEN }}
-        inputs: |
-          {
-            "packages": "${{ env.changed_dirs }}"  # 传递变动的目录作为参数
-          }
+        inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
