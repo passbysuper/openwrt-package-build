@@ -82,7 +82,9 @@ jobs:
         echo "$CHANGED_FILES"
 
         # 提取文件夹名称并去重
-        CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
+        #CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | tr '\n' ' ')
+        CHANGED_DIRS=$(echo "$CHANGED_FILES" | awk '{print $NF}' | xargs -n 1 dirname | sort -u | grep -vE '^\.$' | tr '\n' ' ')
+
 
         # 提取顶级文件夹名称
         TOP_LEVEL_DIRS=$(echo "$CHANGED_DIRS" | tr ' ' '\n' | awk -F'/' '{print $1}' | sort -u | tr '\n' ' ')
