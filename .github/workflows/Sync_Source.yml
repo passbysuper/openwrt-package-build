@@ -77,6 +77,10 @@ jobs:
         # 合并两个结果
         CHANGED_FILES=$(echo -e "$CHANGED_FILES_SOURCE\n$CHANGED_FILES_TARGET" | sort -u)
 
+        # 调试：列出所有变更的文件名称
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+
         # 提取文件夹名称并去重
         CHANGED_DIRS=$(echo "$CHANGED_FILES" | xargs -n 1 dirname | sort -u | tr '\n' ' ')
 
@@ -90,9 +94,6 @@ jobs:
         else
           echo "changed_dirs=" >> $GITHUB_ENV
         fi
-
-
-
 
 
 
