@@ -56,7 +56,7 @@ for package in "${PACKAGES[@]}"; do
 
     [[ -f "$MAKEFILE" ]] || { echo "❌ $MAKEFILE 不存在，跳过"; continue; }
 
-    SOURCE_URL=$(awk -F ':= ' '/^PKG_SOURCE_URL:=/{print $2}' "$MAKEFILE")
+    SOURCE_URL=$(grep -E '^PKG_SOURCE_URL:?=' "$MAKEFILE" | awk -F '[:=] ' '{print $2}')
     [[ -n "$SOURCE_URL" ]] || { echo "❌ 获取 $package 源码地址失败"; continue; }
 
     TAR_PATH="/tmp/${package}.tar.gz"
