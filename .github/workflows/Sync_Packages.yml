@@ -73,6 +73,37 @@ jobs:
           exit 0
         fi || exit 0
 
+
+  check:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      with:
+        fetch-depth: 0
+
+    - name: Check for changes
+      id: detect_changes
+      run: |
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -Eo '^[^/]+/' | sort -u | uniq | grep -vE '^\.github/|^README.md' || true)
+        echo "Changed directories: $CHANGED_DIRS"
+        if [[ -n "$CHANGED_DIRS" ]]; then
+          echo "changes=true" >> $GITHUB_ENV
+          echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+        else
+          echo "changes=false" >> $GITHUB_ENV
+        fi
+
+    - name: Trigger Package_Build workflow
+      if: env.changes == 'true'
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Package_Build.yml
+        token: ${{ secrets.GITHUB_TOKEN }}
+        inputs: '{"packages": "${{ env.changed_dirs }}"}'
+
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
       with:
@@ -81,4 +112,3 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 1
 
- 
