@@ -27,7 +27,7 @@ repos=(
     "master https://github.com/immortalwrt/packages libs/libcron ./libcron"
     "master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
     # sub-web
-    # "master https://github.com/immortalwrt/packages net/sub-web ./sub-web"   
+    "master https://github.com/immortalwrt/packages net/sub-web ./sub-web"   
 )
 
 # 遍历 repos 数组并调用 clone_and_move 函数
