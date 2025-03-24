@@ -100,7 +100,7 @@ jobs:
       if: env.changes == 'true'
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: Package_Build.yml
+        workflow: .github/workflows/Package_Build.yml   # 确保指定了完整的路径
         token: ${{ secrets.GITHUB_TOKEN }}
         inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
