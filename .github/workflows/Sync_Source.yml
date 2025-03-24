@@ -59,7 +59,7 @@ jobs:
         TARGET_DIR="$GITHUB_WORKSPACE/${{matrix.target}}"
 
         # 排除的目录和文件
-        EXCLUDE_LIST=("${{matrix.target}}" ".github" "README.md")
+        EXCLUDE_LIST=("${{matrix.target}}" ".github" "README.md" ".git")
 
         # 构建 rsync 的排除参数
         EXCLUDE_PARAMS=()
@@ -84,6 +84,11 @@ jobs:
         else
           echo "changed_files=" >> $GITHUB_ENV
         fi
+
+
+
+
+
 
 
     - name: Upload
