@@ -50,20 +50,35 @@ sed -i \
 
 ##更新HASH
 PACKAGES=("subconverter" "sub-web")
+TMP_DIR="/tmp/pkg_hash_update"
+mkdir -p "$TMP_DIR"
 
 for package in "${PACKAGES[@]}"; do
-    MAKEFILE="${package}/Makefile"
+    MAKEFILE="./${package}/Makefile"
+    [ -f "$MAKEFILE" ] || { echo "❌ $MAKEFILE 不存在"; continue; }
 
-    [[ -f "$MAKEFILE" ]] || { echo "❌ $MAKEFILE 不存在，跳过"; continue; }
+    # 提取变量
+    SOURCE_URL=$(awk -F':=' '/^PKG_SOURCE_URL:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
+    OLD_VERSION=$(awk -F':=' '/^PKG_SOURCE_VERSION:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
+    OLD_HASH=$(awk -F':=' '/^PKG_MIRROR_HASH:=/{print $2}' "$MAKEFILE" | sed 's/^[ \t]*//')
+    [ -z "$SOURCE_URL" ] && { echo "❌ 无法获取源码URL"; continue; }
 
-    SOURCE_URL=$(grep -E '^PKG_SOURCE_URL:?=' "$MAKEFILE" | awk -F '[:=] ' '{print $2}')
-    [[ -n "$SOURCE_URL" ]] || { echo "❌ 获取 $package 源码地址失败"; continue; }
+    # 克隆和计算哈希
+    CLONE_DIR="${TMP_DIR}/${package}"
+    rm -rf "$CLONE_DIR"
+    git clone -q "$SOURCE_URL" "$CLONE_DIR" || { echo "❌ 克隆失败"; continue; }
+    
+    NEW_VERSION=$(git -C "$CLONE_DIR" rev-parse HEAD)
+    tar czf "${TMP_DIR}/${package}.tar.gz" -C "$CLONE_DIR" . || { echo "❌ 创建tar包失败"; continue; }
+    NEW_HASH=$(sha256sum "${TMP_DIR}/${package}.tar.gz" | awk '{print $1}')
 
-    TAR_PATH="/tmp/${package}.tar.gz"
-    wget -qO "$TAR_PATH" "$SOURCE_URL" || { echo "❌ 下载 $package 失败"; continue; }
+    # 更新Makefile
+    sed -i "s/^PKG_SOURCE_VERSION:=.*/PKG_SOURCE_VERSION:=$NEW_VERSION/; \
+            s/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$NEW_HASH/" "$MAKEFILE"
 
-    NEW_HASH=$(sha256sum "$TAR_PATH" | awk '{print $1}')
-    sed -i "s/^PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=$NEW_HASH/" "$MAKEFILE"
-
-    echo "✅ $package PKG_MIRROR_HASH 更新完成"
+    echo "✅ $package 更新成功"
+    echo "版本: $OLD_VERSION -> $NEW_VERSION"
+    echo "哈希: $OLD_HASH -> $NEW_HASH"
 done
+
+rm -rf "$TMP_DIR"
