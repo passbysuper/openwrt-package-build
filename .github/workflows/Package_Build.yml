@@ -25,7 +25,6 @@ jobs:
           fetch-depth: 0
 
       - name: Build
-        #uses: Super-Passerby/gh-action-sdk@main
         uses: Super-Passerby/gh-action-sdk@hash
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
