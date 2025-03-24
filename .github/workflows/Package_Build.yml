@@ -86,7 +86,7 @@ jobs:
 
 
       - name: Set start time (Asia/Shanghai timezone)
-        id: set_time
+        id: set_time1
         run: |
           # 获取当前时间并格式化
           START_TIME_TAG=$(TZ="Asia/Shanghai" date +'%Y.%m.%d-%H_%M')
