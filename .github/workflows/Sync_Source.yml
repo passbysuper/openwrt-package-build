@@ -67,12 +67,15 @@ jobs:
           EXCLUDE_PARAMS+=("--exclude=$item")
         done
 
-        # 使用 rsync 对比两个目录的差异，并过滤掉非文件（如目录或符号链接）
-        CHANGED_FILES=$(rsync -rcn --out-format="%n" "${EXCLUDE_PARAMS[@]}" "$SOURCE_DIR/" "$TARGET_DIR/" | grep -v '/$' | while read -r file; do
-          if [ -f "$SOURCE_DIR/$file" ]; then
-            echo "$file"
-          fi
-        done)
+        # 使用 rsync 对比两个目录的差异（包括新增的文件）
+        # 1. 检测 SOURCE_DIR 中新增或修改的文件
+        CHANGED_FILES_SOURCE=$(rsync -rcn --out-format="%n" "${EXCLUDE_PARAMS[@]}" "$SOURCE_DIR/" "$TARGET_DIR/" | grep -v '/$')
+
+        # 2. 检测 TARGET_DIR 中新增的文件
+        CHANGED_FILES_TARGET=$(rsync -rcn --out-format="%n" "${EXCLUDE_PARAMS[@]}" "$TARGET_DIR/" "$SOURCE_DIR/" | grep -v '/$')
+
+        # 合并两个结果
+        CHANGED_FILES=$(echo -e "$CHANGED_FILES_SOURCE\n$CHANGED_FILES_TARGET" | sort -u)
 
         # 提取文件夹名称并去重
         CHANGED_DIRS=$(echo "$CHANGED_FILES" | xargs -n 1 dirname | sort -u | tr '\n' ' ')
@@ -87,6 +90,7 @@ jobs:
         else
           echo "changed_dirs=" >> $GITHUB_ENV
         fi
+
 
 
 
