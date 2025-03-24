@@ -24,44 +24,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up packages
-        run: |
-          # 如果输入了 packages 参数，则使用它；否则，使用默认值
-          if [ -z "${{ github.event.inputs.packages }}" ]; then
-            echo "No specific packages provided. Using default."
-            
-            PACKAGES="luci-theme-argon luci-app-argon-config \
-            luci-app-openclash luci-app-homeproxy luci-app-nikki \
-            luci-app-zerotier zerotier miniupnpc libnatpmp \
-            luci-app-filebrowser filebrowser \
-            luci-app-lucky luci-app-autoreboot \
-            sub-web subconverter libcron quickjspp"
-           
-          else
-            echo "Using provided packages: ${{ github.event.inputs.packages }}"
-            PACKAGES="${{ github.event.inputs.packages }}"
-          fi
-          echo "PACKAGES=${PACKAGES}" >> $GITHUB_ENV
-
       - name: Build
         uses: Super-Passerby/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: filebrowser luci-app-autoreboot luci-app-homeproxy luci-app-nikki luci-app-zerotier miniupnpc zerotier libnatpmp luci-app-filebrowser luci-app-lucky luci-app-openclash luci-theme-argon luci-app-argon-config
+          PACKAGES: luci-theme-argon luci-app-argon-config \
+            luci-app-openclash luci-app-homeproxy luci-app-nikki \
+            luci-app-zerotier zerotier miniupnpc libnatpmp \
+            luci-app-filebrowser filebrowser \
+            luci-app-lucky luci-app-autoreboot \
+            sub-web subconverter libcron quickjspp               
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
       - name: Delete other language
         run: |
           find bin/packages/${{ matrix.arch }}/packages_ci -type f -name "luci-i18n*" ! -name "*zh-cn*" -delete
-
-      - name: Store packages
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ matrix.arch }}-${{ matrix.sdk }}
-          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
-
 
       - name: Set start time (Asia/Shanghai timezone)
         id: set_time
@@ -82,8 +61,29 @@ jobs:
           # 输出结果用于调试
           echo "Generated TAG_NAME_FM: FM:$START_TIME_TAG"
           echo "Generated RELEASE_NAME_FM: Firmware发布时间(UTC+8): $START_TIME_RELEASE"
+
+      - name: Set up GitHub Release For Firmware
+        #if: false  # 跳过该步骤
+        id: create_release_for_firmware
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME_FM }}
+          name: ${{ env.RELEASE_NAME_FM }}
+          files: |
+            ./bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
+          body: "更新固件：${{ env.PACKAGES }}" 
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+          
+      - name: Store packages
+        if: false  # 跳过该步骤
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ matrix.arch }}-${{ matrix.sdk }}
+          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
                     
       - name: Upload packages
+        if: false  # 跳过该步骤
         uses: ncipollo/release-action@main
         with:
           token: ${{ secrets.GH_PAT }}
