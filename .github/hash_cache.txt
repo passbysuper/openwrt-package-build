@@ -1,4 +1,3 @@
-./.git d41d8cd98f00b204e9800998ecf8427e  -
 ./filebrowser d41d8cd98f00b204e9800998ecf8427e  -
 ./libnatpmp d41d8cd98f00b204e9800998ecf8427e  -
 ./luci-app-argon-config d41d8cd98f00b204e9800998ecf8427e  -
