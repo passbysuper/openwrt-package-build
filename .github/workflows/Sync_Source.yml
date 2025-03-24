@@ -85,22 +85,22 @@ jobs:
         # 调试：显示当前的提交信息
         echo "Current commit diff:"
         git diff --name-only HEAD^ HEAD
-        
-        # 使用 git diff 获取变动的文件夹
-        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | grep -o '^[^/]*' | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
-        # 调试：显示变更的文件夹
+        # 获取所有变更文件的一级目录，并去重
+        CHANGED_DIRS=$(git diff --name-only HEAD^ HEAD | awk -F'/' '{print $1}' | sort -u | grep -vE '^\.github$|^README.md$' || true)
+
+        # 调试：输出变更的目录列表
         echo "Changed directories after processing: $CHANGED_DIRS"
 
-        # 如果有变动的目录，则保存到 GitHub 环境变量
+        # 确保多个目录之间用空格分隔，并写入 GITHUB_ENV
         if [[ -n "$CHANGED_DIRS" ]]; then
             echo "changes=true" >> $GITHUB_ENV
-            echo "changed_dirs=$CHANGED_DIRS" >> $GITHUB_ENV
+            echo "changed_dirs=$(echo $CHANGED_DIRS | tr '\n' ' ')" >> $GITHUB_ENV
         else
             echo "changes=false" >> $GITHUB_ENV
         fi
         
-        # 调试：显示环境变量的内容
+        # 调试：查看 GITHUB_ENV 变量内容
         echo "Environment variables set:"
         cat $GITHUB_ENV
 
