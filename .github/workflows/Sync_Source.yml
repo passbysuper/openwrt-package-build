@@ -87,14 +87,14 @@ jobs:
         git diff --name-only HEAD~1 HEAD
 
         # 获取变更的目录列表（基于 git diff）
-        CHANGED_DIRS_DIFF=$(git diff --name-only HEAD~1 HEAD | xargs -n 1 dirname | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        CHANGED_DIRS_DIFF=$(git diff --name-only HEAD~1 HEAD | xargs -I {} dirname {} | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
         # 调试：显示 git diff 处理后的变更目录
         echo "Changed directories from git diff:"
         echo "$CHANGED_DIRS_DIFF"
 
         # 获取未跟踪的文件和目录（基于 git status）
-        CHANGED_DIRS_STATUS=$(git status --porcelain | awk '{print $2}' | xargs -n 1 dirname | sort -u | grep -vE '^\.github$|^README.md$' || true)
+        CHANGED_DIRS_STATUS=$(git status --porcelain | awk '{print $2}' | xargs -I {} dirname {} | sort -u | grep -vE '^\.github$|^README.md$' || true)
 
         # 调试：显示 git status 处理后的变更目录
         echo "Changed directories from git status:"
