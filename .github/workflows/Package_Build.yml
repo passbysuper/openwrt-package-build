@@ -35,8 +35,10 @@ jobs:
             luci-app-filebrowser filebrowser
             luci-app-lucky luci-app-autoreboot
             sub-web subconverter libcron quickjspp               
-          NO_REFRESH_CHECK: true
-          IGNORE_ERRORS: true
+          #NO_REFRESH_CHECK: true
+          #IGNORE_ERRORS: true
+          NO_REFRESH_CHECK: false
+          IGNORE_ERRORS: false
 
       - name: Delete other language
         run: |
