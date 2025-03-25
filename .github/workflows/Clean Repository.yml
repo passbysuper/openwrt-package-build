@@ -32,7 +32,7 @@ jobs:
           git commit -m "清理仓库：只保留 .github 和 README.md" || echo "没有变更"
           git push
 
-     - name: Clear cache (if enabled)
+      - name: Clear cache
         if: github.event.inputs.CLEAN_CACHE == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
