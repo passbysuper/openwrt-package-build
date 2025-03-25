@@ -24,6 +24,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Build
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
+          FEEDNAME: packages_ci
+          PACKAGES: luci-theme-argon luci-app-argon-config
+            luci-app-openclash luci-app-homeproxy luci-app-nikki
+            luci-app-zerotier zerotier miniupnpc libnatpmp
+            luci-app-filebrowser filebrowser
+            luci-app-lucky luci-app-autoreboot
+            sub-web subconverter libcron quickjspp               
+          NO_REFRESH_CHECK: true
+          IGNORE_ERRORS: true
+          FIXUP: 1
+
+      - name: Delete other language
+        run: |
+          find bin/packages/${{ matrix.arch }}/packages_ci -type f -name "luci-i18n*" ! -name "*zh-cn*" -delete
+
       - name: Set start time (Asia/Shanghai timezone)
         id: set_time
         run: |
@@ -60,55 +79,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-      - name: Build
-        uses: openwrt/gh-action-sdk@main
-        env:
-          ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
-          FEEDNAME: packages_ci
-          PACKAGES: luci-theme-argon luci-app-argon-config
-            luci-app-openclash luci-app-homeproxy luci-app-nikki
-            luci-app-zerotier zerotier miniupnpc libnatpmp
-            luci-app-filebrowser filebrowser
-            luci-app-lucky luci-app-autoreboot
-            sub-web subconverter libcron quickjspp               
-          NO_REFRESH_CHECK: true
-          IGNORE_ERRORS: true
-          FIXUP: 1
-
-      - name: Delete other language
-        run: |
-          find bin/packages/${{ matrix.arch }}/packages_ci -type f -name "luci-i18n*" ! -name "*zh-cn*" -delete
-
-
       - name: Upload Files to Existing Release
         run: |
           gh release upload ${{ env.TAG_NAME_FM }} ./bin/packages/${{ matrix.arch }}/packages_ci/*.ipk --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-
-      - name: Set up GitHub Release For Firmware
-        #if: false  # 跳过该步骤
-        id: create_release_for_firmware
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.TAG_NAME_FM }}
-          name: ${{ env.RELEASE_NAME_FM }}
-          files: |
-            ./bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
-          body: "更新固件：${{ env.PACKAGES }}" 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-          
-      - name: Store packages
-        if: false  # 跳过该步骤
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ matrix.arch }}-${{ matrix.sdk }}
-          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
                              
       - name: Delete releases tags and workflows runs
         uses: ophub/delete-releases-workflows@main
