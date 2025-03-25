@@ -1,0 +1,68 @@
+name: test_release_name
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: "Changed packages"
+        required: false
+        default: ""  # 默认值为空
+jobs:
+  build:
+    name: build ${{ matrix.arch }}-${{ matrix.sdk }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk:
+          - 24.10.0
+        arch:
+          - x86_64
+
+    steps:
+      - uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Set start time (Asia/Shanghai timezone)
+        id: set_time
+        run: |
+          # 获取当前时间并格式化
+          START_TIME_TAG=$(TZ="Asia/Shanghai" date +'%Y.%m.%d-%H_%M')
+          START_TIME_RELEASE=$(TZ="Asia/Shanghai" date +'%Y-%m-%d %H:%M')
+          
+          echo "Start time: $START_TIME_TAG"
+                         
+          echo "START_TIME_TAG=$START_TIME_TAG" >> $GITHUB_ENV
+          echo "START_TIME_RELEASE=$START_TIME_RELEASE" >> $GITHUB_ENV
+
+      - name: Create Git tag
+        id: create_tag
+        run: |
+          # 设置标签名
+          TAG_NAME_FM="IPK：${{ env.START_TIME_TAG }}"
+          RELEASE_NAME_FM="插件发布时间(UTC+8)：${{ env.START_TIME_RELEASE }}"
+          
+          # 输出标签名和发布名         
+          echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_ENV
+          echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_ENV
+          
+          # 输出标签名和发布名到后续步骤
+          echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_OUTPUT
+          echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_OUTPUT
+
+          PACKAGES="luci-app-1 luci-app-2"
+          echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
+          
+      - name: Create GitHub Release Tag
+        run: |
+          gh release create "${{ env.TAG_NAME_FM }}" \
+            --title "${{ env.RELEASE_NAME_FM }}" \
+            --notes "更新固件：${{ env.PACKAGES }}"  \
+            --repo "${{ github.repository }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
