@@ -32,7 +32,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: sub-web subconverter         
+          PACKAGES: sub-web
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
           FIXUP: 1
