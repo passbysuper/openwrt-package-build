@@ -49,6 +49,6 @@ sed -i \
 
 # 设置PKG_MIRROR_HASH:=skip
 for package in subconverter sub-web; do
-    sed -i 's/^PKG_SOURCE_VERSION:=.*/PKG_MIRROR_HASH:=skip/' "./${package}/Makefile"
-    echo "✅ ${package} Makefile 已更新"
+    makefile="./${package}/Makefile"
+    sed -i '/^PKG_MIRROR_HASH:=.*/c\PKG_MIRROR_HASH:=skip' "$makefile"
 done
