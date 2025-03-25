@@ -51,14 +51,23 @@ jobs:
           echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_OUTPUT
           echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_OUTPUT
 
-          PACKAGES="luci-app-1 luci-app-2"
-          echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
+          PACKAGES="luci-app-1 luci-app-2 a b c d"
+
+          # 转换成多行并排序
+          SORTED_PACKAGES=$(echo "$PACKAGES" | tr ' ' '\n' | sort)
+    
+          # 存储到 GitHub 环境变量
+          echo "SORTED_PACKAGES<<EOF" >> $GITHUB_ENV
+          echo "$SORTED_PACKAGES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+
           
       - name: Create GitHub Release Tag
         run: |
           gh release create "${{ env.TAG_NAME_FM }}" \
             --title "${{ env.RELEASE_NAME_FM }}" \
-            --notes "更新固件：${{ env.PACKAGES }}"  \
+            --notes "更新固件：${{ env.SORTED_PACKAGES }}"  \
             --repo "${{ github.repository }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
