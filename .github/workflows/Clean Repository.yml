@@ -32,15 +32,23 @@ jobs:
           git commit -m "清理仓库：只保留 .github 和 README.md" || echo "没有变更"
           git push
 
-      - name: Clear cache (if enabled)
+     - name: Clear cache (if enabled)
         if: github.event.inputs.CLEAN_CACHE == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "清理 GitHub Actions 缓存..."
-          # 使用 GitHub API 列出缓存并删除
-          caches=$(gh api /repos/${{ github.repository }}/actions/caches --paginate | jq -r '.actions[] | .id')
-          for cache in $caches; do
-            echo "删除缓存 ID: $cache"
-            gh api -X DELETE /repos/${{ github.repository }}/actions/caches/$cache
-          done
+          # 使用 GitHub API 列出缓存
+          caches=$(gh api /repos/${{ github.repository }}/actions/caches --paginate)
+          
+          # 检查是否有缓存
+          if [[ -z "$caches" || "$caches" == "[]" ]]; then
+            echo "没有缓存可删除"
+          else
+            # 如果有缓存，解析并删除
+            cache_ids=$(echo "$caches" | jq -r '.actions[] | .id')
+            for cache_id in $cache_ids; do
+              echo "删除缓存 ID: $cache_id"
+              gh api -X DELETE /repos/${{ github.repository }}/actions/caches/$cache_id
+            done
+          fi
