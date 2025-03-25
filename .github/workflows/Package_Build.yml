@@ -29,12 +29,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: luci-theme-argon luci-app-argon-config
-            luci-app-openclash luci-app-homeproxy luci-app-nikki
-            luci-app-zerotier zerotier miniupnpc libnatpmp
-            luci-app-filebrowser filebrowser
-            luci-app-lucky luci-app-autoreboot
-            sub-web subconverter libcron quickjspp               
+          PACKAGES: sub-web subconverter libcron quickjspp               
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
           FIXUP: 1
