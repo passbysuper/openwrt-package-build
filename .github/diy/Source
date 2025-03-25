@@ -49,5 +49,5 @@ sed -i \
 
 # 设置PKG_MIRROR_HASH:=skip
 for package in subconverter sub-web; do
-    sed -i '/^PKG_MIRROR_HASH:=.*/c\PKG_MIRROR_HASH:=skip' "/${package}/Makefile"
+    sed -i '/^PKG_MIRROR_HASH:=.*/c\PKG_MIRROR_HASH:=skip' "./${package}/Makefile"
 done
