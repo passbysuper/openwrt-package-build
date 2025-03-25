@@ -32,9 +32,15 @@ jobs:
           git commit -m "清理仓库：只保留 .github 和 README.md" || echo "没有变更"
           git push
 
-      - name: Delete branch cache
+      - name: Clear cache (if enabled)
         if: github.event.inputs.CLEAN_CACHE == 'true'
-        uses: snnaplab/delete-branch-cache-action@v1
-        with:
-          ref: refs/pull/${{ github.event.number }}/merge  # 指定Pull Request的ref
-          github-token: ${{ secrets.GITHUB_TOKEN }}  # 使用GitHub Token
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "清理 GitHub Actions 缓存..."
+          # 使用 GitHub API 列出缓存并删除
+          caches=$(gh api /repos/${{ github.repository }}/actions/caches --paginate | jq -r '.actions[] | .id')
+          for cache in $caches; do
+            echo "删除缓存 ID: $cache"
+            gh api -X DELETE /repos/${{ github.repository }}/actions/caches/$cache
+          done
