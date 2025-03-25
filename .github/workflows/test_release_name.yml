@@ -52,7 +52,7 @@ jobs:
           echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_OUTPUT
 
           # 转换成多行并排序
-          SORTED_PACKAGES=$(echo "${{ env.PACKAGES }}" | tr ' ' '\n' | sort)
+          SORTED_PACKAGES=$(echo "${{ github.event.inputs.packages }}" | tr ' ' '\n' | sort)
     
           # 存储到 GitHub 环境变量
           echo "SORTED_PACKAGES<<EOF" >> $GITHUB_ENV
