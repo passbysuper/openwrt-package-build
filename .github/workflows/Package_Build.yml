@@ -36,9 +36,14 @@ jobs:
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
+      - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
+        uses: mxschmitt/action-tmate@v3
+
       - name: Delete other language
         run: |
           find bin/packages/${{ matrix.arch }}/packages_ci -type f -name "luci-i18n*" ! -name "*zh-cn*" -delete
+
+
 
       - name: Set start time (Asia/Shanghai timezone)
         id: set_time
