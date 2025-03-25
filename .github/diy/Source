@@ -12,15 +12,21 @@ clone_and_move() {
 
 # 定义 repos 数组
 repos=(
+    "master https://github.com/immortalwrt/luci applications/luci-app-autoreboot ./luci-app-autoreboot"
+    "master https://github.com/vernesong/OpenClash luci-app-openclash ./luci-app-openclash"
+    # lucky
     "main https://github.com/gdy666/luci-app-lucky luci-app-lucky ./luci-app-lucky"
+    "main https://github.com/gdy666/luci-app-lucky lucky ./lucky"
+    # nikki
     "main https://github.com/nikkinikki-org/OpenWrt-nikki luci-app-nikki ./luci-app-nikki"
     "main https://github.com/nikkinikki-org/OpenWrt-nikki nikki ./nikki"
-    "master https://github.com/vernesong/OpenClash luci-app-openclash ./luci-app-openclash"
+    # zerotier
     "master https://github.com/immortalwrt/luci applications/luci-app-zerotier ./luci-app-zerotier"
-    "master https://github.com/immortalwrt/luci applications/luci-app-autoreboot ./luci-app-autoreboot"
     "master https://github.com/immortalwrt/packages net/zerotier ./zerotier"
-    "master https://github.com/immortalwrt/packages libs/libnatpmp ./libnatpmp"
-    "master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
+    ## zerotier安装时需要的依赖
+    #"master https://github.com/immortalwrt/packages libs/libnatpmp ./libnatpmp"
+    #"master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
+    # filebrowser
     "master https://github.com/immortalwrt/luci applications/luci-app-filebrowser ./luci-app-filebrowser"
     "master https://github.com/immortalwrt/packages utils/filebrowser ./filebrowser"
     # subconverter
