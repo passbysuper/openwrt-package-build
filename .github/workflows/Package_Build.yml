@@ -15,7 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         sdk:
-          - 24.10.0
+          #- 24.10.0
+          - openwrt-24.10.0
         arch:
           - x86_64
 
