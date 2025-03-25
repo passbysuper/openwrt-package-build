@@ -65,8 +65,7 @@ jobs:
         run: |
           gh release create "${{ env.TAG_NAME_FM }}" \
             --title "${{ env.RELEASE_NAME_FM }}" \
-            --notes "本次更新插件为：
-          ${{ env.SORTED_PACKAGES }}"  \
+            --notes "本次更新插件为：${{ env.SORTED_PACKAGES }}"  \
             --repo "${{ github.repository }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
