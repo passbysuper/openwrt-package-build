@@ -32,7 +32,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: ${{ github.event.inputs.packages }} 
+          PACKAGES: luci-app-argon-config
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
