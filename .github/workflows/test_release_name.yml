@@ -51,10 +51,8 @@ jobs:
           echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_OUTPUT
           echo "RELEASE_NAME_FM=$RELEASE_NAME_FM" >> $GITHUB_OUTPUT
 
-          PACKAGES="luci-app-1 luci-app-2 a b c d"
-
           # 转换成多行并排序
-          SORTED_PACKAGES=$(echo "$PACKAGES" | tr ' ' '\n' | sort)
+          SORTED_PACKAGES=$(echo "${{ env.PACKAGES }}" | tr ' ' '\n' | sort)
     
           # 存储到 GitHub 环境变量
           echo "SORTED_PACKAGES<<EOF" >> $GITHUB_ENV
