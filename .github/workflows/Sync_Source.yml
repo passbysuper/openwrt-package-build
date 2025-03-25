@@ -89,14 +89,8 @@ jobs:
         # 设置 GitHub 环境变量
         echo "changed_dirs=$TOP_LEVEL_DIRS" >> $GITHUB_ENV
 
-
-
-     
-
-
-
-
     - name: Upload
+      if: false  # 跳过该步骤
       run: |
         if [ -e $GITHUB_WORKSPACE/LICENSE ]; then
           cp $GITHUB_WORKSPACE/LICENSE $GITHUB_WORKSPACE/${{matrix.target}}
@@ -113,6 +107,35 @@ jobs:
           echo "nothing to commit"
           exit 0
         fi || exit 0    
+
+    - name: Upload
+      run: |
+        # 复制 LICENSE 和 README.md 到目标目录
+        if [ -e $GITHUB_WORKSPACE/LICENSE ]; then
+            cp $GITHUB_WORKSPACE/LICENSE $GITHUB_WORKSPACE/${{matrix.target}}
+        fi
+        if [ -e $GITHUB_WORKSPACE/README.md ]; then
+            cp $GITHUB_WORKSPACE/README.md $GITHUB_WORKSPACE/${{matrix.target}}
+        fi
+
+        # 进入目标目录
+        cd $GITHUB_WORKSPACE/${{matrix.target}}
+        
+        # 配置 Git 用户信息
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        
+        # 检查是否有变更
+        if git status --porcelain | grep .; then
+            git add .
+            git commit -am "update $(date '+%Y-%m-%d %H:%M:%S')"
+            # 使用 GITHUB_TOKEN 推送
+            git push origin HEAD:${{ matrix.target }}
+        else
+            echo "nothing to commit"
+            exit 0
+        fi || exit 0
+
 
     - name: Trigger Package_Build workflow
       if: env.changed_dirs != ''
