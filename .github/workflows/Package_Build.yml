@@ -59,8 +59,8 @@ jobs:
         id: create_tag
         run: |
           # 设置标签名
-          TAG_NAME_FM="FM：${{ env.START_TIME_TAG }}"
-          RELEASE_NAME_FM="Firmware发布时间(UTC+8)：${{ env.START_TIME_RELEASE }}"
+          TAG_NAME_FM="IPK：${{ env.START_TIME_TAG }}"
+          RELEASE_NAME_FM="插件发布时间(UTC+8)：${{ env.START_TIME_RELEASE }}"
           
           # 输出标签名和发布名         
           echo "TAG_NAME_FM=$TAG_NAME_FM" >> $GITHUB_ENV
