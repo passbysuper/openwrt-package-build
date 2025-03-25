@@ -118,7 +118,9 @@ jobs:
       if: env.changed_dirs != ''
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: .github/workflows/Package_Build.yml  # 确保路径正确
+        #workflow: .github/workflows/Package_Build.yml  # 确保路径正确
+        workflow: .github/workflows/test_release_name.yml  # 确保路径正确
+
         token: ${{ secrets.GITHUB_TOKEN }}
         inputs: '{"packages": "${{ env.changed_dirs }}"}'
 
