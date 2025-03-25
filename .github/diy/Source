@@ -26,12 +26,12 @@ repos=(
     # subconverter
     "master https://github.com/immortalwrt/packages net/subconverter ./subconverter"
     ## subconverter安装时需要的依赖
-    "master https://github.com/immortalwrt/packages libs/libcron ./libcron"
-    "master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
+    #"master https://github.com/immortalwrt/packages libs/libcron ./libcron"
+    #"master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
     ## subconverter构建时需要的依赖（不必安装）
-    "master https://github.com/immortalwrt/packages libs/jpcre2 ./jpcre2"
-    "master https://github.com/immortalwrt/packages libs/rapidjson ./rapidjson"
-    "master https://github.com/immortalwrt/packages libs/toml11 ./toml11"
+    #"master https://github.com/immortalwrt/packages libs/jpcre2 ./jpcre2"
+    #"master https://github.com/immortalwrt/packages libs/rapidjson ./rapidjson"
+    #"master https://github.com/immortalwrt/packages libs/toml11 ./toml11"
     # sub-web
     "master https://github.com/immortalwrt/packages net/sub-web ./sub-web"   
 )
