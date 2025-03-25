@@ -35,6 +35,8 @@ jobs:
 
       - name: Clear GitHub Actions cache (if enabled)
         if: github.event.inputs.CLEAN_CACHE == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 设置 GitHub token 进行身份验证
         run: |
           echo "清理 GitHub Actions 缓存..."
           # 删除所有 GitHub Actions 缓存
