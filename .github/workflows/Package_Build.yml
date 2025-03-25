@@ -16,7 +16,8 @@ jobs:
       matrix:
         sdk:
           #- 24.10.0
-          - openwrt-24.10.0
+          #- openwrt-24.10.0
+          - master
         arch:
           - x86_64
 
