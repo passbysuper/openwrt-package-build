@@ -32,12 +32,9 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
-          PACKAGES: luci-app-argon-config
+          PACKAGES: ${{ github.event.inputs.packages }} 
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
-
-      - name: SSH（INPUT"q" ➡️ RUN："./mv" ➡️ “exit”）
-        uses: mxschmitt/action-tmate@v3
 
       - name: Delete other language
         run: |
