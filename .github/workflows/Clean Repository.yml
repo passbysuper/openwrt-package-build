@@ -16,25 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Cleanup
-        run: |
-          echo "Fetching list of cache key"
-          cacheKeysForPR=$(gh cache list --ref $BRANCH --limit 100 --json id --jq '.[].id')
-
-          ## Setting this to not fail the workflow while deleting cache keys.
-          set +e
-          echo "Deleting caches..."
-          for cacheKey in $cacheKeysForPR
-          do
-              gh cache delete $cacheKey
-          done
-          echo "Done"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge     
-      
+    
       
       - name: Delete all except .github and README.md
         run: |
@@ -52,23 +34,29 @@ jobs:
           git commit -m "清理仓库：只保留 .github 和 README.md" || echo "没有变更"
           git push
 
-      - name: Clear cache
+      - name: 清理所有缓存
         if: github.event.inputs.CLEAN_CACHE == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "清理 GitHub Actions 缓存..."
-          # 使用 GitHub API 列出缓存
-          caches=$(gh api /repos/${{ github.repository }}/actions/caches --paginate)
+          echo "正在清理所有 GitHub Actions 缓存..."
           
-          # 检查是否有缓存
-          if [[ -z "$caches" || "$caches" == "[]" ]]; then
+          # 使用 GitHub API 列出所有缓存
+          caches=$(gh api /repos/${{ github.repository }}/actions/caches --paginate || echo "null")
+          
+          # 检查是否成功获取缓存数据
+          if [[ "$caches" == "null" || "$caches" == "[]" ]]; then
             echo "没有缓存可删除"
           else
             # 如果有缓存，解析并删除
-            cache_ids=$(echo "$caches" | jq -r '.actions[] | .id')
-            for cache_id in $cache_ids; do
-              echo "删除缓存 ID: $cache_id"
-              gh api -X DELETE /repos/${{ github.repository }}/actions/caches/$cache_id
-            done
+            cache_ids=$(echo "$caches" | jq -r '.actions[] | .id' || echo "")
+            
+            if [[ -z "$cache_ids" ]]; then
+              echo "没有缓存可删除"
+            else
+              for cache_id in $cache_ids; do
+                echo "删除缓存 ID: $cache_id"
+                gh api -X DELETE /repos/${{ github.repository }}/actions/caches/$cache_id
+              done
+            fi
           fi
