@@ -52,8 +52,8 @@ jobs:
 
       - name: Build
         #uses: openwrt/gh-action-sdk@main
-        #uses: immortalwrt/gh-action-sdk@master
-        uses: Super-Passerby/gh-action-sdk@fixup-option
+        uses: immortalwrt/gh-action-sdk@master
+        #uses: Super-Passerby/gh-action-sdk@fixup-option
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           FEEDNAME: packages_ci
