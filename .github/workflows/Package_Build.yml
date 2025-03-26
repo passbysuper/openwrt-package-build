@@ -36,6 +36,7 @@ jobs:
           PACKAGES: ${{ github.event.inputs.packages }}               
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
+          FIXUP: 1
 
       - name: Delete other language
         run: |
