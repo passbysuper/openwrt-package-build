@@ -59,8 +59,8 @@ sed -i \
 -e 's/+docker /+docker +dockerd /g' \
 */Makefile
 
-# 设置PKG_MIRROR_HASH:=skip FIXUP=1
-for package in subconverter sub-web; do
-    sed -i '/^PKG_MIRROR_HASH:=.*/c\PKG_MIRROR_HASH:=skip' "./${package}/Makefile"
-    sed -i '/^PKG_MIRROR_HASH:=skip/a FIXUP=1' "./${package}/Makefile"
+# 设置 PKG_MIRROR_HASH:=skip 并添加 FIXUP=1 （ALL）
+find . -type f -name "Makefile" | while read -r makefile; do
+    sed -i '/^PKG_MIRROR_HASH:=.*/c\PKG_MIRROR_HASH:=skip' "$makefile"
+    sed -i '/^PKG_MIRROR_HASH:=skip/a FIXUP=1' "$makefile"
 done
