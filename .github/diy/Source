@@ -24,16 +24,16 @@ repos=(
     "master https://github.com/immortalwrt/luci applications/luci-app-zerotier ./luci-app-zerotier"
     "master https://github.com/immortalwrt/packages net/zerotier ./zerotier"
     ## zerotier安装时需要的依赖
-    #"master https://github.com/immortalwrt/packages libs/libnatpmp ./libnatpmp"
-    #"master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
+    "master https://github.com/immortalwrt/packages libs/libnatpmp ./libnatpmp"
+    "master https://github.com/immortalwrt/packages net/miniupnpc ./miniupnpc"
     # filebrowser
     "master https://github.com/immortalwrt/luci applications/luci-app-filebrowser ./luci-app-filebrowser"
     "master https://github.com/immortalwrt/packages utils/filebrowser ./filebrowser"
     # subconverter
     "master https://github.com/immortalwrt/packages net/subconverter ./subconverter"
     ## subconverter安装时需要的依赖
-    #"master https://github.com/immortalwrt/packages libs/libcron ./libcron"
-    #"master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
+    "master https://github.com/immortalwrt/packages libs/libcron ./libcron"
+    "master https://github.com/immortalwrt/packages libs/quickjspp ./quickjspp"
     ## subconverter构建时需要的依赖（不必安装）
     #"master https://github.com/immortalwrt/packages libs/jpcre2 ./jpcre2"
     #"master https://github.com/immortalwrt/packages libs/rapidjson ./rapidjson"
